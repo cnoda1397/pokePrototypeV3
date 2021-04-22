@@ -21,6 +21,8 @@ window.onload = () => {
         var key = childSnapshot.key;
         // childData will be the actual contents of the child
         var childData = JSON.stringify(childSnapshot.val());
+        childData = childData.replace(/{|}|"/g, "");
+        childData = childData.replace(/,/g, ", ")
         //console.log(`Key: ${key} || child: ${childData}`);
         msg = (msg + `${key}: ${childData}` + '<br>\n');
         });

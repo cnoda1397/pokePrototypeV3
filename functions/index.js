@@ -18,7 +18,7 @@ admin.initializeApp();
         //let mon = Math.floor(Math.random() * 151 + 1);
         let shiny = Math.floor(Math.random() * 125 + 1);
 
-        let listRNG = Math.floor(Math.random() * 1000 + 1);
+        let listRNG = Math.floor(Math.random() * 10000 + 1);
         if (listRNG <= 4272){
             var mon = Math.floor(Math.random() * lists.common.length)
             var pokemon = lists.common[mon];
@@ -51,9 +51,9 @@ admin.initializeApp();
         var id = Object.keys(pokemon)[0];
         var name = pokemon[id];
         if (shiny === 3){
-            name = `shiny ${name}`;
+            name = `Shiny ${name}`;
         }
-        var msg = (`you caught a wild ${name}`);
+        
 
         //TIME LIMITTING
         // if(time.getMinutes() <= 10){
@@ -61,20 +61,25 @@ admin.initializeApp();
         //     res.send(msg);
         // }
         //console.log(`listRNG = ${listRNG}, mon = ${mon}`)
-        
-        var dbRef = admin.database().ref(`/${trainer}/${id}/${name}`)
+        if (shiny === 3){
+            var dbRef = admin.database().ref(`/${trainer}/shiny${id}/${name}`)
+        }
+        else{
+            var dbRef = admin.database().ref(`/${trainer}/${id}/${name}`)
+        }
         dbRef.transaction(pokemon => {
             return (pokemon || 0) + 1;
         })
+        
+        let level = Math.floor(Math.random() * 100 + 1);
+        dbref = admin.database().ref(`/${trainer}/${id}/_Level`);
+        dbref.transaction(lvl =>{
+          if((lvl || 0) > level)
+          return lvl
+          else return level
+        })
+        var msg = (`you caught a level ${level} ${name}`);
         res.send(msg);
-        
-        //dbref = admin.database().ref(`/${trainer}/${id}/${level}`);
-        //dbref.transaction(lvl =>{
-        //   if(lvl > level)
-        //   return lvl
-        //   else return level
-        //})
-        
         // URL STUFF
         // const monSTR = mon.toString();
         // let dex = `https://pokeapi.co/api/v2/pokemon/${monSTR}`;
@@ -108,17 +113,17 @@ const lists = {
     common:[{10:"Caterpie"}, {13:"Weedle"}, {16:"Pidgey"}, {19:"Rattata"}, {21:"Spearow"}, {23:"Ekans"},
         {27:"Sandshrew"}, {29:"Nidoran ♀"}, {32:"Nidoran ♂"}, {41:"Zubat"}, {43:"Oddish"}, {46:"Paras"},
         {48:"Venonat"}, {50:"Diglett"}, {54:"Psyduck"}, {56:"Mankey"}, {58:"Growlithe"}, {60:"Poliwag"},
-        {69:"Bellsprout"}, {72:"Tentacool"}, {74:"Geodude"}, {77:"Ponyta"}, {84:"Doduo"}, {90:"Shelder"},
+        {69:"Bellsprout"}, {72:"Tentacool"}, {74:"Geodude"}, {77:"Ponyta"}, {84:"Doduo"}, {90:"Shellder"},
         {92:"Gastly"}, {96:"Drowzee"}, {98:"Krabby"}, {100:"Voltorb"}, {102:"Exeggcute"}, {104:"Cubone"},
         {116:"Horsea"}, {118:"Goldeen"}, {120:"Staryu"}],
-    uncommon:[{11:"Metapod"}, {14:"Kakuna"}, {18:"Pidgeotto"}, {20:"Raticate"}, {22:"Fearow"}, {24:"Arbok"},
+    uncommon:[{11:"Metapod"}, {14:"Kakuna"}, {17:"Pidgeotto"}, {20:"Raticate"}, {22:"Fearow"}, {24:"Arbok"},
         {28:"Sandslash"}, {30:"Nidorina"}, {33:"Nidorino"}, {35:"Clefairy"}, {37:"Vulpix"}, {39:"Jigglypuff"},
         {42:"Golbat"}, {44:"Gloom"}, {47:"Parasect"}, {49:"Venomoth"}, {51:"Dugtrio"}, {53:"Meowth"}, {64:"Abra"},
         {66:"Machop"}, {75:"Graveler"}, {79:"Slowpoke"}, {81:"Magnemite"}, {85:"Dodrio"}, {86:"Seel"}, {88:"Grimer"},
         {93:"Haunter"}, {103:"Exeggutor"}, {105:"Marowak"}, {109:"Koffing"}, {111:"Rhyhorn"}, {114:"Tangela"},
         {129:"Magikarp"}, {138:"Omanyte"}, {140:"Kabuto"}],
     rare:[{1:"Bulbasaur"}, {4:"Charmander"}, {7:"Squirtle"}, {12:"Butterfree"}, {15:"Beedrill"}, {18:"Pidgeot"},
-        {25:"Pikachu"}, {36:"Clefable"}, {38:"Ninetails"}, {40:"wigglytuff"}, {45:"Vileplume"},
+        {25:"Pikachu"}, {36:"Clefable"}, {38:"Ninetails"}, {40:"Wigglytuff"}, {45:"Vileplume"},
         {53:"Persian"}, {55:"Golduck"}, {57:"Primape"}, {59:"Arcanine"}, {61:"Poliwhirl"}, {64:"Kadabra"}, 
         {67:"Machoke"}, {70:"Weepinbell"}, {73:"Tentacruel"}, {78:"Rapidash"}, {80:"Slowbro"}, {82:"Magneton"},
         {87:"Dewgong"}, {89:"Muk"}, {91:"Cloyster"}, {95:"Onix"}, {97:"Hypno"}, {99:"Kingler"}, {101:"Electrode"},
@@ -130,7 +135,7 @@ const lists = {
         {115:"Kangaskhan"}, {123:"Scyther"}, {124:"Jynx"}, {125:"Electabuzz"}, {126:"Magmar"}, {128:"Tauros"}, {137:"Porygon"},
         {141:"Kabutops"}, {148:"Dragonair"}],
     secret:[{3:"Venusaur"}, {6:"Charizard"}, {9:"Blastoise"}, {122:"Mr. Mime"}, {130:"Gyarados"}, {131:"Lapras"},
-        {132:"Ditto"}, {134:"Vaporeon"}, {135:"Jolteon"}, {136:"Flareon"}, {142:"Aerodactyl"}, {144:"Snorlax"},
+        {132:"Ditto"}, {134:"Vaporeon"}, {135:"Jolteon"}, {136:"Flareon"}, {142:"Aerodactyl"}, {143:"Snorlax"},
         {149:"Dragonite"}],
     legendary:[{144:"Articuno"}, {145:"Zapdos"}, {146:"Moltres"}],
     mythical:[{150:"Mewtwo"}, {151:"Mew"}]

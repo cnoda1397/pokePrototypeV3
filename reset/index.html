@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Your Pokedex</title>
+    <title>Reset</title>
 
     <!-- The core Firebase JS SDK is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
@@ -32,11 +32,33 @@
       //firebase.analytics();
     </script>
     <script src = "pokedex.js" defer></script>
-    
+    <script>
+      function resetAsh(){
+        var query = firebase.database().ref("Ash").orderByKey();
+        query.once("value").then(function(snapshot) {
+            snapshot.forEach(function(childSnapshot) {
+                //key = dex id
+                var key = childSnapshot.key;
+                //childdata = {caught}, {level}
+                var childData = childSnapshot.val();
+                Object.keys(childData).forEach(key => {
+                  if(key !== "_Level"){
+                    childData[key] = 1;
+                    document.getElementById("output").innerHTML = childData[key];
+                  }
+                })
+                childSnapshot.ref.update(childData);
+                
+            });
+        });
+    }
+    </script>
   </head>
   <body>
     
     <p id="dex"></p>
+    <button id="reset" onclick="resetAsh()">Reset Ash</button>
+    <p id = "output"></p>
 
   </body>
 </html>

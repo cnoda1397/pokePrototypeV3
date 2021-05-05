@@ -21,6 +21,10 @@
     {
       "target": "dex",
       "public": "dex"
+    },
+    {
+      "target": "dex-reset",
+      "public": "reset"
     }
   ],
   "storage": {

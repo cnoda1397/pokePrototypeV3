@@ -52,6 +52,13 @@
             });
         });
     }
+    function changeGen(){
+      const genLimit = 2;
+      var dbRef = firebase.database().ref('/Admin/Generation');
+      dbRef.transaction(gen =>{
+        return (gen % genLimit) + 1;
+      })
+    }
     </script>
   </head>
   <body>
@@ -59,6 +66,7 @@
     <p id="dex"></p>
     <button id="reset" onclick="resetAsh()">Reset Ash</button>
     <p id = "output"></p>
+    <button id="gen" onclick="changeGen()">Change Generation</button>
 
   </body>
 </html>

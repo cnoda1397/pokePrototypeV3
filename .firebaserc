@@ -11,7 +11,7 @@
         "app": [
           "testdb-9b696"
         ],
-        "reset": [
+        "dex-reset": [
           "dex-reset"
         ]
       }

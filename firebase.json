@@ -23,8 +23,8 @@
       "public": "dex"
     },
     {
-      "target": "dex-reset",
-      "public": "reset"
+      "site": "admin-privileges",
+      "public": "admin"
     }
   ],
   "storage": {

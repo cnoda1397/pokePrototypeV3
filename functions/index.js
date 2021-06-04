@@ -6,19 +6,20 @@ const admin = require("firebase-admin");
 const express = require("express");
 const app = express();
 admin.initializeApp();
-// TIME LIMITTING
+
 
 
 // MAIN FUNCTION
 // 
 app.get('/:viewer', function(req, res){
-    let time = new Date;
-    let rn = time.getMinutes();
-    if(rn >= 10){
-        rn = 60 - rn;
-        msg = `The Safari Zone is closed right now. Please come back in ${rn} minutes`
-        res.send(msg);
-    }
+    // TIME LIMITTING
+    // let time = new Date;
+    // let rn = time.getMinutes();
+    // if(rn >= 20){
+    //     rn = 60 - rn;
+    //     msg = `The Safari Zone is closed right now. Please come back in ${rn} minutes`
+    //     res.send(msg);
+    // }
     var trainer = req.params.viewer;
     let list = kanto;
     // GETTING THE GENERATION
@@ -85,7 +86,7 @@ app.get('/:viewer', function(req, res){
     dbRef.transaction(pokemon => {
         return (pokemon || 0) + 1;
     })
-    
+
     let level = Math.floor(Math.random() * 100 + 1);
     dbref = admin.database().ref(`/${trainer}/${id}/${levelPath}`);
     dbref.transaction(lvl =>{
@@ -93,6 +94,7 @@ app.get('/:viewer', function(req, res){
         return lvl
         else return level
     })
+    name = name.replace("~Shiny", "*Shiny*")
     var msg = (`you caught a level ${level} ${name}`);
     res.send(msg);
 })
@@ -120,7 +122,7 @@ const kanto = {
         {117:"Seadra"}, {119:"Seaking"}, {121:"Starmie"}, {124:"Jynx"}, {127:"Pinsir"}, {133:"Eevee"},
         {139:"Omastar"}, {147:"Dratini"}],
     ultra:[{2:"Ivysaur"}, {5:"Charmeleon"}, {8:"Wartortle"}, {26:"Raichu"}, {31:"Nidoqueen"}, {34:"Nidoking"}, {62:"Poliwrath"},
-        {65:"Alakazam"}, {68:"Machamp"}, {71:"Victreebell"}, {76:"Golemn"}, {83:"Farfetch'd"}, {94:"Gengar"},
+        {65:"Alakazam"}, {68:"Machamp"}, {71:"Victreebell"}, {76:"Golem"}, {83:"Farfetch'd"}, {94:"Gengar"},
         {115:"Kangaskhan"}, {123:"Scyther"}, {124:"Jynx"}, {125:"Electabuzz"}, {126:"Magmar"}, {128:"Tauros"}, {137:"Porygon"},
         {141:"Kabutops"}, {148:"Dragonair"}],
     secret:[{3:"Venusaur"}, {6:"Charizard"}, {9:"Blastoise"}, {122:"Mr. Mime"}, {130:"Gyarados"}, {131:"Lapras"},
@@ -130,11 +132,23 @@ const kanto = {
     mythical:[{150:"Mewtwo"}, {151:"Mew"}]
 };
 const jhoto = {
-    common:[{10:"Caterpie"}, {13:"Weedle"}],
-    uncommon:[{11:"Metapod"}, {14:"Kakuna"}],
-    rare:[{1:"Bulbasaur"}, {4:"Charmander"}, {7:"Squirtle"}],
-    ultra:[{2:"Ivysaur"}, {5:"Charmeleon"}, {8:"Wartortle"}],
-    secret:[{3:"Venusaur"}, {6:"Charizard"}, {9:"Blastoise"}, {149:"Dragonite"}],
-    legendary:[{144:"Articuno"}, {145:"Zapdos"}, {146:"Moltres"}],
-    mythical:[{150:"Mewtwo"}, {151:"Mew"}]
+    common:[{161:"Sentret"}, {163:"Hoothoot"}, {165:"Ledyba"}, {167:"Spinarak"}, {177:"Natu"}, {187:"Hoppip"}, {190:"Aipom"},
+        {191:"Sunkern"}, {204:"Pineco"}, {206:"Dunsparce"}, {209:"Snubbull"}, {218:"Slugma"}, {220:"Swinub"}, {223:"Remoraid"},
+        {228:"Houndour"}],
+    uncommon:[{162:"Furret"}, {164:"Noctowl"}, {166:"Ledian"}, {168:"Ariados"}, {170:"Chinchou"}, {179:"Mareep"}, {188:"Skiploom"},
+        {193:"Yanma"}, {194:"Wooper"}, {198:"Murkrow"}, {203:"Girafarig"}, {211:"Quilfish"}, {213:"Shuckle"}, {215:"Sneasel"},
+        {216:"Teddiursa"}, {222:"Corsola"}, {231:"Phanpy"}, {234:"Stantler"}],
+    rare:[{152:"Chikorita"}, {155:"Cindaquil"}, {158:"Totodile"}, {169:"Crobat"}, {171:"Lanturn"}, {172:"Pichu"}, {173:"Cleffa"},
+        {174:"Igglybuff"}, {175:"Togepi"}, {178:"Xatu"}, {180:"Flaffy"}, {182:"Bellossom"}, {183:"Marill"}, {185:"Sudowoodo"},
+        {189:"Jumpluff"}, {192:"Sunflora"}, {195:"Quagsire"}, {200:"Misdreavus"}, {202:"Wobbuffet"}, {205:"Forretress"},
+        {207:"Gligar"}, {210:"Granbull"}, {214:"Heracross"}, {219:"Magcargo"}, {221:"Piloswine"}, {224:"Octillery"},
+        {226:"Mantine"}, {229:"Houndoom"}, {232:"Donphan"}, {236:"Tyrogue"}, {238:"Smoochum"}, {239:"Elekid"}, {240:"Magby"},
+       {246:"Larvitar"}],
+    ultra:[{153:"Bayleef"}, {156:"Quilava"}, {159:"Croconaw"}, {176:"Togetic"}, {181:"Ampharos"}, {184:"Azumarill"},
+        {199:"Slowking"}, {201:"Unown"}, {217:"Ursaring"}, {227:"Skarmory"}, {230:"Kingdra"}, {233:"Porygon2"},
+        {235:"Smeargle"}, {237:"Hitmontop"}, {241:"Miltank"}, {242:"Blissey"}, {247:"Pupitar"}],
+    secret:[{153:"Meganium"}, {156:"Typhlosion"}, {160:"Feraligatr"}, {186:"Politoed"}, {196:"Espeon"}, {197:"Umbreon"},
+        {208:"Steelix"}, {212:"Scizor"}, {225:"Delibird"}, {248:"Tyranitar"}],
+    legendary:[{243:"Raikou"}, {244:"Entei"}, {245:"Suicune"}, {249:"Lugia"}, {250:"Ho-Oh"}],
+    mythical:[{251:"Celebi"}]
 };

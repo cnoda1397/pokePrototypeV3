@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SoCal Admins</title>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase-database.js"></script>
+
+
+    <script>
+      // Your web app's Firebase configuration
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+      var firebaseConfig = {
+        apiKey: "AIzaSyBGZ-aJ6nvQv9sd62KDgVN-_MCwhjKFeoY",
+        authDomain: "testdb-9b696.firebaseapp.com",
+        databaseURL: "https://testdb-9b696-default-rtdb.firebaseio.com",
+        projectId: "testdb-9b696",
+        storageBucket: "testdb-9b696.appspot.com",
+        messagingSenderId: "491392582429",
+        appId: "1:491392582429:web:8010499236e2b929e8d7f4",
+        measurementId: "G-02MY9KHXY8"
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      //firebase.analytics();
+    </script>
+    <script defer>
+      const genLimit = 2;
+      const pokemonLimit = 251;
+      // Resets the number of pokemon ash caught to 1 for every index
+      // Gets ref, then iterates through all values inside the DB index then resets any value
+      //  where the key is not _Level or ~~Level which represent normal and shiny
+      function resetAsh(){
+        var query = firebase.database().ref("Ash").orderByKey();
+        query.once("value").then(function(snapshot) {
+            snapshot.forEach(function(pokemonSnapshot) {
+                //key = pokedex id
+                var key = pokemonSnapshot.key;
+                //pokemonData = {caught}, {level}
+                var pokemonData = pokemonSnapshot.val();
+                Object.keys(pokemonData).forEach(key => {
+                  if(key !== "_Level"){
+                    pokemonData[key] = 1;
+                  }
+                })
+                pokemonSnapshot.ref.update(pokemonData);
+                
+            });
+        });
+      }
+      // Changes the Generation number inside /Admin/Generation
+      // If button is pressed, gen is incremented and modulus by highest generation possible
+      // If value is entered, checks the value and changes gen if less than genLimit
+      function changeGen(genGiven = false){
+        var dbRef = firebase.database().ref('/Admin/Generation');
+        dbRef.transaction(gen =>{
+          if(genGiven === true){
+            var newGen = parseInt(document.getElementById("genChange").value);
+            if(Number.isFinite(newGen) && newGen <= genLimit){
+              
+              return newGen;
+            }
+          }
+          else{
+            var newGen = (gen % genLimit) + 1;
+            document.getElementById("gen").innerHTML = `new Gen: ${newGen}`;
+            return newGen;
+          }
+        })
+        document.getElementById("gen").innerHTML = gen;
+        // future plans: If gen = 0, make main function choose random gen. 
+        // Currently, it treats any gen other than 1 as 2.
+      }
+
+      // Searches through the database for the trainer with the most caught for given pokedex id
+      // Pushes all promises into array and sets the winner in mostOutput after every promise in 
+      //  array is resolved.
+      // Uncomment all logs to see the order of compiling by js async programming. 
+      async function mostCaught(){
+        var dexNum = parseInt(document.getElementById("mostInput").value);
+        if(!isFinite(dexNum) || (dexNum > pokemonLimit)){
+          document.getElementById("mostOutput").innerHTML = `invalid entry`;
+          return;
+        }
+        var query = firebase.database().ref().orderByKey();
+        var most = 0;
+        var trainer = 'None';
+        var msg = '*';
+        var x = 0;
+        // console.log(1);
+        var promiseArr = [];
+        promiseArr.push(
+          query.once("value").then(fullSnap=>{
+            // console.log(2);
+            fullSnap.forEach(viewer => {
+              var viewerKey = viewer.key;
+              var childRef = firebase.database().ref(`/${viewerKey}/${dexNum}`);
+              promiseArr.push(
+                childRef.once("value").then(trainerSnap =>{
+                  // console.log(3);
+                  var caught = 0;
+                  trainerSnap.forEach(caughtSnap => {
+                // snapshot.forEach(caughtSnap =>{
+                    caughtKey = caughtSnap.key;
+                    // console.log(caughtKey);
+                    if(caughtKey !== '_Level' && caughtKey !== '~~Level'){
+                      caught = caught + parseInt(caughtSnap.val());
+                    }
+                  })
+                  if(caught > most){
+                    trainer = viewerKey;
+                    most = caught;
+                  }
+                })
+              )
+            })
+            Promise.all(promiseArr).then(()=>{
+              // console.log(4);
+              // x++;
+              document.getElementById("mostOutput").innerHTML = `${trainer} caught ${most}`;
+            })
+          })
+        )
+        // console.log(5);
+      }
+    </script>
+  </head>
+  <body>
+    
+    <p id="dex"></p>
+    <button id="reset" onclick="resetAsh()">Reset Ash</button>
+    <p id = gen></p>
+    <input id="genChange" type="number" placeholder="New Generation">
+    <button id="submitGen" onclick="changeGen(true)">Submit</button>
+    <p id= newline></p>
+    <button id="genPlus" onclick="changeGen(false)">Increment Generation</button>
+    <p id = "mostOutput"></p>
+    <input id="mostInput" type="number" placeholder="Pokedex ID">
+    <button id="most" onclick="mostCaught()">Most Caught</button>
+  </body>
+</html>
+

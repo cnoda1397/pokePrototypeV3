@@ -13,6 +13,9 @@
         ],
         "dex-reset": [
           "dex-reset"
+        ],
+        "admin-privileges": [
+          "admin"
         ]
       }
     }

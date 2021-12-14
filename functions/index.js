@@ -99,6 +99,7 @@ app.get('/:viewer', function(req, res){
     res.send(msg);
 })
 exports.encounter = functions.https.onRequest(app);
+exports.auction = require('./auction').auction;
 
 const kanto = {
     common:[{10:"Caterpie"}, {13:"Weedle"}, {16:"Pidgey"}, {19:"Rattata"}, {21:"Spearow"}, {23:"Ekans"},
